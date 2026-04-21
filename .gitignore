@@ -33,6 +33,12 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Platform folders (Android-only repo)
+/ios/
+/linux/
+/macos/
+/windows/
+
 # Symbolication related
 app.*.symbols
 
