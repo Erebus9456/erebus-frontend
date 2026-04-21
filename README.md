@@ -59,27 +59,6 @@ Output paths:
 - `build/app/outputs/flutter-apk/app-release.apk`
 - `build/app/outputs/bundle/release/app-release.aab`
 
-### iOS
-
-```bash
-flutter build ios --release
-```
-
-Then open `ios/Runner.xcworkspace` in Xcode to sign and archive.
-
-### Web
-
-```bash
-flutter build web --release
-```
-
-### Desktop (macOS / Windows / Linux)
-
-```bash
-flutter build macos --release
-flutter build windows --release
-flutter build linux --release
-```
 
 ## Project structure (high-signal)
 
