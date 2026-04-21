@@ -39,7 +39,7 @@ migrate_working_dir/
 /macos/
 /windows/
 /web/
-
+/test/
 # Symbolication related
 app.*.symbols
 
