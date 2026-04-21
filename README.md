@@ -10,7 +10,7 @@ This repository contains the Flutter client (UI + crypto + PocketBase integratio
 - **Auth**: register/login/logout using PocketBase users.
 - **Chat list**: loads your chats from PocketBase and updates via realtime subscriptions.
 - **Messaging**:
-  - plaintext records exist for compatibility, but the core flow is **encrypted per-recipient**
+  - all messages / attatchments are **encrypted per-recipient**
   - supports **replies**, **edit/delete**, **search**, and **attachments**
 - **Themes**: theme selection persisted via `shared_preferences`.
 
