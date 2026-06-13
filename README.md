@@ -188,9 +188,9 @@ Dilithium Verification
 ### Installation
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/Erebus9456/erebus-frontend/)
 
-cd erebusv3
+cd erebus-frontend
 
 flutter pub get
 
