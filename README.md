@@ -188,7 +188,7 @@ Dilithium Verification
 ### Installation
 
 ```bash
-git clone [<repository-url>](https://github.com/Erebus9456/erebus-frontend/)
+git clone https://github.com/Erebus9456/erebus-frontend.git
 
 cd erebus-frontend
 
