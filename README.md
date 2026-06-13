@@ -1,162 +1,336 @@
-# Erebus (Flutter MVP) — `erebusv3`
+# ⚡ Erebus
 
-Erebus is a Flutter chat MVP backed by **PocketBase** with **post-quantum end‑to‑end encryption (E2EE)** for messages and attachments.
+> Post-Quantum End-to-End Encrypted Messaging Platform built with Flutter, PocketBase, ML-KEM (Kyber), and Dilithium.
 
-This repository contains the Flutter client (UI + crypto + PocketBase integration).
+<p align="center">
+  <img src="assets/app_logo.svg" width="160" alt="Erebus Logo">
+</p>
 
-## What this app does
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.x-blue?style=for-the-badge&logo=flutter" />
+  <img src="https://img.shields.io/badge/PocketBase-Backend-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/E2EE-Post--Quantum-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-black?style=for-the-badge" />
+</p>
 
-- **Multi-server support**: pick/add/remove PocketBase base URLs from the login screen.
-- **Auth**: register/login/logout using PocketBase users.
-- **Chat list**: loads your chats from PocketBase and updates via realtime subscriptions.
-- **Messaging**:
-  - all messages / attatchments are **encrypted per-recipient**
-  - supports **replies**, **edit/delete**, **search**, and **attachments**
-- **Themes**: theme selection persisted via `shared_preferences`.
+---
 
-## Tech stack
+## Overview
 
-- **Flutter** + `provider` for app state
-- **PocketBase** (`pocketbase` package) for auth, collections, realtime, and file storage
-- **Secure persistence**:
-  - PocketBase auth state persisted via `flutter_secure_storage` (`CustomSecureAuthStore`)
-  - E2EE secrets stored locally via `E2eeSecureStorage`
-- **Crypto (E2EE)**:
-  - **ML‑KEM‑512 (Kyber)** via `oqs` for key encapsulation (shared secret per recipient)
-  - **Dilithium2** via `oqs` for message signatures
-  - **HKDF‑SHA256** to derive a 32‑byte session key from the shared secret
-  - **XChaCha20‑Poly1305** (`cryptography`) for AEAD encryption of the message payload
+**Erebus** is a secure messaging MVP designed around **Post-Quantum Cryptography (PQC)** and modern end-to-end encryption principles.
 
-## Prerequisites
+The application enables users to communicate through encrypted chats where messages and attachments are individually encrypted for each recipient using **ML-KEM-512 (Kyber)** and authenticated using **Dilithium2 signatures**.
 
-- Flutter SDK (Dart SDK constraint in `pubspec.yaml` is `^3.10.1`)
-- A running PocketBase server reachable from the device/emulator
-  - Your UI hints mention Tor; if your deployment requires it, ensure the device has connectivity to the `.onion` / proxy route before logging in.
+This repository contains the complete Flutter client:
 
-## Quick start (run locally)
+* Modern Flutter UI
+* Authentication & session management
+* PocketBase integration
+* Realtime chat synchronization
+* Post-Quantum E2EE implementation
+* Secure local key management
+
+---
+
+## Key Features
+
+### Secure by Design
+
+* 🔐 Post-Quantum End-to-End Encryption
+* ✍️ Dilithium2 digital signatures
+* 🛡️ XChaCha20-Poly1305 authenticated encryption
+* 🔑 HKDF-SHA256 session key derivation
+* 📱 Device-local secure key storage
+
+### Messaging
+
+* 💬 Realtime conversations
+* 📎 Encrypted attachments
+* ↩️ Message replies
+* ✏️ Message editing
+* 🗑️ Message deletion
+* 🔍 Message search
+
+### Platform
+
+* 🌐 Multi-server PocketBase support
+* ⚡ Realtime synchronization
+* 🎨 Persistent theme selection
+* 🔒 Secure authentication persistence
+
+---
+
+## Architecture
+
+```text
+┌────────────────────┐
+│   Flutter Client   │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│    PocketBase      │
+│ Auth • Realtime    │
+│ Storage • Records  │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  E2EE Layer        │
+│ ML-KEM-512         │
+│ Dilithium2         │
+│ HKDF-SHA256        │
+│ XChaCha20Poly1305  │
+└────────────────────┘
+```
+
+---
+
+## Technology Stack
+
+| Layer                  | Technology               |
+| ---------------------- | ------------------------ |
+| Frontend               | Flutter                  |
+| State Management       | Provider                 |
+| Backend                | PocketBase               |
+| Authentication         | PocketBase Auth          |
+| Storage                | PocketBase File Storage  |
+| Realtime               | PocketBase Subscriptions |
+| Secure Storage         | flutter_secure_storage   |
+| PQ Encryption          | ML-KEM-512 (Kyber)       |
+| Digital Signatures     | Dilithium2               |
+| Session Key Derivation | HKDF-SHA256              |
+| Symmetric Encryption   | XChaCha20-Poly1305       |
+
+---
+
+## Cryptography Pipeline
+
+### Identity
+
+Each user owns:
+
+* ML-KEM-512 keypair
+* Dilithium2 keypair
+
+Private keys remain on the device.
+
+Public keys are published to PocketBase for recipient discovery.
+
+### Encryption Flow
+
+```text
+Message
+   │
+   ▼
+Payload Encoding
+   │
+   ▼
+ML-KEM Encapsulation
+   │
+   ▼
+Shared Secret
+   │
+   ▼
+HKDF-SHA256
+   │
+   ▼
+Session Key
+   │
+   ▼
+XChaCha20-Poly1305
+   │
+   ▼
+Ciphertext
+   │
+   ▼
+Dilithium Signature
+```
+
+### Decryption Flow
+
+```text
+Encrypted Payload
+        │
+        ▼
+ML-KEM Decapsulation
+        │
+        ▼
+Shared Secret
+        │
+        ▼
+HKDF-SHA256
+        │
+        ▼
+Session Key
+        │
+        ▼
+XChaCha20-Poly1305
+        │
+        ▼
+Plaintext
+        │
+        ▼
+Dilithium Verification
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+* Flutter SDK
+* Dart SDK `^3.10.1`
+* Running PocketBase instance
+* Network connectivity to your PocketBase deployment
+
+### Installation
 
 ```bash
+git clone <repository-url>
+
+cd erebusv3
+
 flutter pub get
+
 flutter run
 ```
 
-On first launch:
-- Pick a PocketBase server in the **Server Selector** on the login screen.
-- Register or login.
-- After login, the app ensures your **E2EE keypair material** exists locally and your **public keys** are uploaded.
+---
 
-## Build / release
+## Build Releases
 
-### Android (APK / App Bundle)
+### Android APK
 
 ```bash
 flutter build apk --release
-# or
+```
+
+Output:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Android App Bundle
+
+```bash
 flutter build appbundle --release
 ```
 
-Output paths:
-- `build/app/outputs/flutter-apk/app-release.apk`
-- `build/app/outputs/bundle/release/app-release.aab`
+Output:
 
+```text
+build/app/outputs/bundle/release/app-release.aab
+```
 
-## Project structure (high-signal)
+---
 
-- `lib/main.dart`
-  - bootstraps `provider` state: `ThemeNotifier` + `AuthProvider`
-  - decides initial route: **Splash** → (**Home** if authenticated, else **Login**)
-- `lib/classes/auth_provider.dart`
-  - owns the PocketBase client (`pb`) and server selection
-  - restores persisted auth, exposes `isAuthenticated`, and triggers UI navigation via `notifyListeners()`
-  - ensures E2EE keys exist after login (`ensureE2eeKeysReady`)
-- `lib/screens/auth/`
-  - `login_screen.dart`: login form + server selector
-  - `register_screen.dart`: user registration
-  - `server_selector_card.dart`: manage base URL selection
-- `lib/screens/ui/`
-  - `home_screen.dart`: chat list + realtime updates + navigation to chat
-  - `chat_screen.dart`: message list + decrypt/verify + send/edit/delete/search + attachments
-- `lib/services/e2ee/`
-  - `key_manager.dart`: generates/stores secrets, uploads public keys to PocketBase
-  - `message_crypto.dart`: KEM → HKDF → XChaCha20-Poly1305 encrypt/decrypt helpers
-  - `signature_service.dart`: Dilithium signing + verification helpers
-  - `public_key_repository.dart`: loads user public keys from PocketBase
-  - `payload_codec.dart`: encodes/decodes the plaintext payload (text, reply reference, attachments bytes)
-  - `pb_file_downloader.dart`: downloads PocketBase “file fields” as bytes
-  - `secure_storage.dart`: local secure storage key naming + read/write helpers
+## Project Structure
 
-## App flow (screens + state)
+```text
+lib/
+├── classes/
+│   └── auth_provider.dart
+│
+├── screens/
+│   ├── auth/
+│   └── ui/
+│
+├── services/
+│   └── e2ee/
+│       ├── key_manager.dart
+│       ├── message_crypto.dart
+│       ├── signature_service.dart
+│       ├── public_key_repository.dart
+│       ├── payload_codec.dart
+│       ├── pb_file_downloader.dart
+│       └── secure_storage.dart
+│
+└── main.dart
+```
+
+---
+
+## Application Flow
 
 ### Startup
 
-- `main()` loads the last selected theme from `shared_preferences`.
-- `AuthProvider` initializes:
-  - loads known PocketBase servers + selected server
-  - builds the PocketBase client with a secure auth store
-  - restores auth (if a prior session exists)
-- While restoring, the app shows `SplashPage`.
+```text
+Launch
+   │
+   ▼
+Splash Screen
+   │
+   ▼
+Restore Auth
+   │
+   ├── Authenticated → Home
+   │
+   └── Not Authenticated → Login
+```
 
-### Login / Register
+### Authentication
 
-- `LoginScreen` calls `authProvider.login(identity, password)`.
-- On success, `AuthProvider` calls `ensureE2eeKeysReady()` which:
-  - makes sure this device has the local secret keys stored
-  - ensures the matching public keys exist on the user record server-side
+1. User selects PocketBase server
+2. User registers or logs in
+3. E2EE keys are generated if missing
+4. Public keys are uploaded
+5. User enters secure messaging environment
 
-### Home (chat list)
+---
 
-- `HomeScreen` queries PocketBase `chats` filtered by membership and sorts by recency.
-- It subscribes to realtime updates on `chats` and refetches when the user is affected.
+## Security Model
 
-### Chat (messages)
+### Private Keys
 
-`ChatScreen` is responsible for:
-- fetching message records for a chat
-- decrypting + verifying encrypted messages
-- sending encrypted messages (and optional attachments)
-- updating/deleting messages (including encrypted messages across recipients)
+Stored exclusively on the user's device using secure storage.
 
-## E2EE design (how the crypto works in this codebase)
+### Public Keys
 
-This app uses a **hybrid E2EE** approach:
+Published to PocketBase for recipient key discovery.
 
-1. **Identity keys per user**
-   - On device, `KeyManager` generates:
-     - **Kyber (ML‑KEM‑512)** keypair for KEM (encryption key agreement)
-     - **Dilithium2** keypair for signatures (authenticity)
-   - **Secret keys stay on device** (stored using secure storage).
-   - **Public keys are uploaded** to the user record in PocketBase (as file fields).
+### Message Storage
 
-2. **Encrypting a message (per recipient)**
-   - The plaintext payload (text, reply id, attachments bytes) is encoded via `PayloadCodec`.
-   - For each recipient:
-     - KEM encapsulation using the recipient’s Kyber public key → `sharedSecret` + `kemCiphertext`
-     - HKDF-SHA256 derives a 32‑byte session key (salt is random per message copy)
-     - XChaCha20‑Poly1305 encrypts the payload using:
-       - random nonce
-       - **AAD** built from `v1|chatType|chatId|timestampMs`
-     - A Dilithium signature is produced over a deterministic “signable” byte layout containing the critical fields (chat context + salt/nonce/ciphertext/authTag).
-   - Storage model:
-     - a PocketBase `messages` record is created first (to get server timestamp)
-     - the encrypted artifacts are uploaded as **file fields** (`kem_ciphertext`, `hkdf_salt`, `xc20_nonce`, `ciphertext`, `auth_tag`, `signature`)
+Messages are stored encrypted.
 
-3. **Decrypting + verifying**
-   - The client downloads the encrypted file fields as bytes.
-   - It decapsulates using the local Kyber secret key and derives the session key (HKDF).
-   - It decrypts with XChaCha20‑Poly1305 using the same AAD.
-   - It fetches the sender’s Dilithium public key and verifies the signature.
-   - If decrypt or verify fails, the message is **not rendered** (the code intentionally skips failures).
+The server never receives plaintext content or encryption keys.
 
-4. **Why messages are duplicated**
-   - For encrypted sends, the app writes **one message record per recipient** (including yourself) so each recipient has artifacts encrypted to their keys.
-   - A random client-side “message group id” is stored in the `content` field for encrypted messages so edit/delete can be applied across all recipient copies **without storing plaintext**.
+### Recipient Isolation
+
+Each recipient receives an independently encrypted copy of a message using their own public key.
+
+---
 
 ## Assets
 
-- `assets/app_logo.svg`
-- `assets/splash_lottie_logo_aninmation.json`
+```text
+assets/
+├── app_logo.svg
+└── splash_lottie_logo_aninmation.json
+```
 
-## Notes / assumptions
+---
 
-- This README documents the Flutter client only. PocketBase collection schema/migrations are not included here, but the client expects collections like `users`, `chats`, and `messages` with the fields referenced in code.
+## Notes & Assumptions
 
+* This repository contains the Flutter client only.
+* PocketBase schema and migrations are maintained separately.
+* The application expects collections such as:
+
+  * `users`
+  * `chats`
+  * `messages`
+* Message encryption is performed per recipient.
+* Public key discovery is handled through PocketBase user records.
+
+### Backend Repository
+
+**Backend Source:** https://github.com/Erebus9456/erebus-backend
+
+---
+
+<p align="center">
+  Built with Flutter, PocketBase, and Post-Quantum Cryptography.
+</p>
