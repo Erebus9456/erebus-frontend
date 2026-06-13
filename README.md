@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Flutter-3.x-blue?style=for-the-badge&logo=flutter" />
   <img src="https://img.shields.io/badge/PocketBase-Backend-orange?style=for-the-badge" />
   <img src="https://img.shields.io/badge/E2EE-Post--Quantum-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Platform-Android-black?style=for-the-badge" />
 </p>
 
 ---
