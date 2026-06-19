@@ -1,5 +1,8 @@
 # ⚡ Erebus
 
+<p align="center">
+  <img src="assets/app_logo_transparent_lightmode.png" alt="App Logo" width="180"/>
+</p>
 > **Next-Generation Post-Quantum End-to-End Encrypted Messaging Platform** > Built with Flutter and PocketBase, powered by cutting-edge quantum-resistant cryptographic primitives (ML-KEM and Dilithium).
 
 ---
