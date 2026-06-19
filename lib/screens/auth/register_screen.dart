@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
 
+import 'package:erebusv3/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:erebusv3/classes/themes.dart';
 import 'package:provider/provider.dart';
@@ -166,7 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Join Erebus",
+                  'Join $kAppName',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,

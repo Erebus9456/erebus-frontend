@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:erebusv3/constants.dart';
 import 'package:erebusv3/screens/auth/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:erebusv3/classes/themes.dart';
@@ -192,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Login",
+                  kAppName,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,

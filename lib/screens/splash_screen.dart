@@ -1,3 +1,4 @@
+import 'package:erebusv3/constants.dart';
 import 'package:erebusv3/classes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart'; // Assuming you have this package
@@ -16,7 +17,7 @@ class SplashPage extends StatelessWidget {
       // Use the theme's logo asset path
       logo: Image.asset(currentTheme.image),
       title: Text(
-        "Erebus",
+        kAppName,
         style: TextStyle(
           fontSize: 24, 
           fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:erebusv3/constants.dart';
 import 'package:erebusv3/classes/themes.dart';
 import 'package:erebusv3/screens/splash_screen.dart';
 import 'package:erebusv3/screens/ui/home_screen.dart';
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
         final currentTheme = themeNotifier.currentTheme;
 
         return MaterialApp(
-          title: 'Erebus',
+          title: kAppName,
           debugShowCheckedModeBanner: false,
           theme: currentTheme.toThemeData(),
           
