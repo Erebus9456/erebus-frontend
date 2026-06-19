@@ -4,12 +4,12 @@ Erebus implements a **hybrid post-quantum end-to-end encryption** scheme. The se
 
 ## Algorithm Summary
 
-| Purpose | Algorithm | Library |
-|---------|-----------|---------|
-| Key encapsulation (KEM) | ML-KEM-512 (Kyber) | `oqs` |
-| Digital signatures | Dilithium2 | `oqs` |
-| Key derivation | HKDF-SHA256 | `cryptography` |
-| Authenticated encryption | XChaCha20-Poly1305 (AEAD) | `cryptography` |
+| Purpose                  | Algorithm                 | Library        |
+| ------------------------ | -------------------------- | -------------- |
+| Key encapsulation (KEM)  | ML-KEM-512 (Kyber)        | `oqs`          |
+| Digital signatures       | Dilithium2                | `oqs`          |
+| Key derivation           | HKDF-SHA256                | `cryptography` |
+| Authenticated encryption | XChaCha20-Poly1305 (AEAD)  | `cryptography` |
 
 ## Identity Keys
 
@@ -60,6 +60,45 @@ Before encryption, the plaintext is encoded as JSON by `PayloadCodec`:
 ```
 
 Attachments are embedded directly in the encrypted payload (not stored as separate PocketBase files for encrypted messages).
+
+## Encryption / Decryption Overview
+
+The diagram below summarizes the full round trip for a single recipient — from plaintext on the sender's device, through the per-recipient encryption steps, to verification and rendering on the recipient's device.
+
+```mermaid
+flowchart TD
+    subgraph Sender["Sender Device"]
+        A["Plaintext message + attachments"] --> B["PayloadCodec.encode → JSON payload"]
+        B --> C["Create PocketBase messages record\n(get server-authoritative timestamp)"]
+        C --> D["Build AAD\nv1 | chatType | chatId | timestampMs"]
+        D --> E["KEM Encapsulate\nML-KEM-512.encapsulate(recipient Kyber pubkey)\n→ sharedSecret, kemCiphertext"]
+        E --> F["Derive Session Key\nHKDF-SHA256(sharedSecret, randomSalt, info)\n→ sessionKey"]
+        F --> G["AEAD Encrypt\nXChaCha20-Poly1305(payload, sessionKey, nonce, AAD)\n→ ciphertext, authTag"]
+        G --> H["Sign\nDilithium2.sign(version+chatType+senderId+chatId+ts+salt+nonce+ciphertext+authTag)\n→ signature"]
+        H --> I["Upload encrypted artifacts as file fields\nkem_ciphertext, hkdf_salt, xc20_nonce,\nciphertext, auth_tag, signature"]
+    end
+
+    I -->|"Repeat per recipient\n(incl. sender's own copy)"| I
+
+    subgraph Server["PocketBase Server (honest-but-curious)"]
+        S["Stores ciphertext + public keys only\nNo plaintext, no secret keys"]
+    end
+
+    I --> S
+
+    subgraph Recipient["Recipient Device"]
+        J["Download encrypted file fields\nPbFileDownloader"] --> K["KEM Decapsulate\nML-KEM-512.decapsulate(kemCiphertext, own Kyber secret key)\n→ sharedSecret"]
+        K --> L["Derive Session Key\nHKDF-SHA256(sharedSecret, salt, info)\n→ sessionKey"]
+        L --> M["AEAD Decrypt\nXChaCha20-Poly1305.decrypt(ciphertext, sessionKey, nonce, AAD, authTag)\n→ plaintext payload"]
+        M --> N["PayloadCodec.decode → message + attachments"]
+        N --> O{"Verify signature\nusing sender's Dilithium public key"}
+        O -->|"Valid"| P["Render message in ChatScreen"]
+        O -->|"Invalid"| Q["Discard — message not rendered"]
+        P --> R["Zeroize sharedSecret & sessionKey (best-effort)"]
+    end
+
+    S --> J
+```
 
 ## Encryption Protocol (Per Recipient)
 
@@ -139,14 +178,14 @@ signature = Dilithium2.sign(signableBytes, senderDilithiumSecretKey)
 
 The message record is updated with file fields:
 
-| Field | Filename | Content |
-|-------|----------|---------|
-| `kem_ciphertext` | `kem_ct.bin` | KEM ciphertext bytes |
-| `hkdf_salt` | `salt.bin` | HKDF salt (32 bytes) |
-| `xc20_nonce` | `nonce.bin` | XChaCha20 nonce |
-| `ciphertext` | `ciphertext.bin` | Encrypted payload |
-| `auth_tag` | `auth_tag.bin` | Poly1305 MAC |
-| `signature` | `sig.bin` | Dilithium signature |
+| Field            | Filename         | Content              |
+| ---------------- | ---------------- | --------------------- |
+| `kem_ciphertext` | `kem_ct.bin`     | KEM ciphertext bytes |
+| `hkdf_salt`      | `salt.bin`       | HKDF salt (32 bytes) |
+| `xc20_nonce`     | `nonce.bin`      | XChaCha20 nonce       |
+| `ciphertext`     | `ciphertext.bin` | Encrypted payload     |
+| `auth_tag`       | `auth_tag.bin`   | Poly1305 MAC          |
+| `signature`      | `sig.bin`        | Dilithium signature   |
 
 ## Decryption Protocol
 
@@ -169,10 +208,12 @@ If decryption or verification fails, the message is **not rendered**. The code i
 Encrypted messages create **one PocketBase record per chat member** (including the sender). Each copy is encrypted to that member's Kyber public key.
 
 **Why:**
+
 - Each recipient needs artifacts encrypted to their own public key
 - The server never has access to a single decryptable copy
 
 **Message Group ID:**
+
 - A random 32-character hex string (`_newClientMessageId()`) is stored in the `content` field
 - All recipient copies share the same group ID
 - Edit and delete operations find all copies by matching this ID
@@ -193,6 +234,7 @@ This ensures all recipients see the updated or deleted state without storing pla
 ## Message Filtering
 
 When fetching messages, the client filters to records where:
+
 - `recipient` is empty (legacy/unencrypted), OR
 - `recipient` equals the current user's ID
 
@@ -200,24 +242,24 @@ This prevents users from seeing copies encrypted for other recipients.
 
 ## Caching
 
-| Cache | Location | Scope |
-|-------|----------|-------|
-| Public keys | `PublicKeyRepository._cache` | Per user ID, in-memory |
-| Downloaded files | `PbFileDownloader._cache` | Per collection/record/filename, in-memory |
+| Cache            | Location                     | Scope                                     |
+| ----------------- | ----------------------------- | ------------------------------------------ |
+| Public keys      | `PublicKeyRepository._cache` | Per user ID, in-memory                    |
+| Downloaded files | `PbFileDownloader._cache`    | Per collection/record/filename, in-memory |
 
 Caches are not persisted across app restarts.
 
 ## Security Properties
 
-| Property | Status |
-|----------|--------|
-| End-to-end encryption | Yes — server sees only ciphertext |
-| Post-quantum KEM | Yes — ML-KEM-512 |
-| Post-quantum signatures | Yes — Dilithium2 |
-| Forward secrecy | No — same long-term Kyber keypair per user |
-| Key rotation | Partial — `key_version` and `key_rotated_at` fields exist but rotation logic is not implemented |
-| Metadata protection | No — chat membership, timestamps, sender/recipient IDs are visible to server |
-| Attachment encryption | Yes — embedded in encrypted payload |
+| Property                 | Status                                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| End-to-end encryption    | Yes — server sees only ciphertext                                                                  |
+| Post-quantum KEM         | Yes — ML-KEM-512                                                                                    |
+| Post-quantum signatures  | Yes — Dilithium2                                                                                     |
+| Forward secrecy          | No — same long-term Kyber keypair per user                                                          |
+| Key rotation             | Partial — `key_version` and `key_rotated_at` fields exist but rotation logic is not implemented    |
+| Metadata protection      | No — chat membership, timestamps, sender/recipient IDs are visible to server                       |
+| Attachment encryption    | Yes — embedded in encrypted payload                                                                 |
 
 ## Threat Model Assumptions
 
