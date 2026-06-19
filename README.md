@@ -1,433 +1,120 @@
-<<<<<<< Updated upstream
 # ⚡ Erebus
 
-> Post-Quantum End-to-End Encrypted Messaging Platform built with Flutter, PocketBase, ML-KEM (Kyber), and Dilithium.
-=======
-56# Erebus
-
-Erebus is a Flutter chat backed by **PocketBase** with **post-quantum end-to-end encryption (E2EE)** for messages and attachments.
->>>>>>> Stashed changes
-
-<p align="center">
-  <img src="assets/app_logo.svg" width="160" alt="Erebus Logo">
-</p>
-
-<<<<<<< Updated upstream
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.x-blue?style=for-the-badge&logo=flutter" />
-  <img src="https://img.shields.io/badge/PocketBase-Backend-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/E2EE-Post--Quantum-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Platform-Android-black?style=for-the-badge" />
-</p>
-
----
-=======
-## Documentation
-
-Full project documentation lives in [`docs/`](docs/README.md):
-
-| Document | Description |
-|----------|-------------|
-| [Getting Started](docs/getting-started.md) | Prerequisites, installation, first run, and troubleshooting |
-| [Architecture](docs/architecture.md) | System design, data flows, and security model |
-| [Project Structure](docs/project-structure.md) | Directory layout and module responsibilities |
-| [E2EE Cryptography](docs/e2ee-cryptography.md) | Post-quantum encryption protocol and message lifecycle |
-| [PocketBase Schema](docs/pocketbase-schema.md) | Expected backend collections, fields, and API usage |
-| [Screens & Features](docs/screens-and-features.md) | UI screens, navigation, and feature reference |
-| [State & Storage](docs/state-and-storage.md) | Provider state, secure storage, and persistence |
-| [Themes](docs/themes.md) | Theme system and available palettes |
-| [Build & Deploy](docs/build-and-deploy.md) | Android builds, signing, and release checklist |
-| [Dependencies](docs/dependencies.md) | Package inventory with usage context |
-
-## What this app does
-
-- **Multi-server support** — Pick, add, edit, and remove PocketBase base URLs from the login screen
-- **Auth** — Register, login, and logout using PocketBase users
-- **Chat list** — Loads your chats from PocketBase and updates via realtime subscriptions
-- **Messaging** — All messages and attachments are **encrypted per-recipient**; supports **replies**, **edit/delete**, **search**, and **attachments** (up to 200 MB)
-- **Group chats** — Create named group conversations with multiple members
-- **Themes** — 50 selectable color themes persisted via `shared_preferences`
-- **Profile** — Edit name, bio, status, and avatar
->>>>>>> Stashed changes
-
-## Overview
-
-<<<<<<< Updated upstream
-**Erebus** is a secure messaging MVP designed around **Post-Quantum Cryptography (PQC)** and modern end-to-end encryption principles.
-=======
-- **Flutter** + `provider` for app state
-- **PocketBase** (`pocketbase` package) for auth, collections, realtime, and file storage
-- **Secure persistence**:
-  - PocketBase auth state persisted via `flutter_secure_storage` (`CustomSecureAuthStore`)
-  - E2EE secrets stored locally via `E2eeSecureStorage`
-- **Crypto (E2EE)**:
-  - **ML-KEM-512 (Kyber)** via `oqs` for key encapsulation (shared secret per recipient)
-  - **Dilithium2** via `oqs` for message signatures
-  - **HKDF-SHA256** to derive a 32-byte session key from the shared secret
-  - **XChaCha20-Poly1305** (`cryptography`) for AEAD encryption of the message payload
-
-See [E2EE Cryptography](docs/e2ee-cryptography.md) for the full protocol.
->>>>>>> Stashed changes
-
-The application enables users to communicate through encrypted chats where messages and attachments are individually encrypted for each recipient using **ML-KEM-512 (Kyber)** and authenticated using **Dilithium2 signatures**.
-
-<<<<<<< Updated upstream
-This repository contains the complete Flutter client:
-
-* Modern Flutter UI
-* Authentication & session management
-* PocketBase integration
-* Realtime chat synchronization
-* Post-Quantum E2EE implementation
-* Secure local key management
+> **Next-Generation Post-Quantum End-to-End Encrypted Messaging Platform** > Built with Flutter and PocketBase, powered by cutting-edge quantum-resistant cryptographic primitives (ML-KEM and Dilithium).
 
 ---
 
-## Key Features
+## 📱 App Demo
 
-### Secure by Design
-
-* 🔐 Post-Quantum End-to-End Encryption
-* ✍️ Dilithium2 digital signatures
-* 🛡️ XChaCha20-Poly1305 authenticated encryption
-* 🔑 HKDF-SHA256 session key derivation
-* 📱 Device-local secure key storage
-
-### Messaging
-
-* 💬 Realtime conversations
-* 📎 Encrypted attachments
-* ↩️ Message replies
-* ✏️ Message editing
-* 🗑️ Message deletion
-* 🔍 Message search
-
-### Platform
-
-* 🌐 Multi-server PocketBase support
-* ⚡ Realtime synchronization
-* 🎨 Persistent theme selection
-* 🔒 Secure authentication persistence
+![Erebus Application Demo](docs/App-Demo.gif)
 
 ---
 
-## Architecture
+## 📌 Overview
 
-```text
-┌────────────────────┐
-│   Flutter Client   │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│    PocketBase      │
-│ Auth • Realtime    │
-│ Storage • Records  │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│  E2EE Layer        │
-│ ML-KEM-512         │
-│ Dilithium2         │
-│ HKDF-SHA256        │
-│ XChaCha20Poly1305  │
-└────────────────────┘
-```
+**Erebus** is a secure-by-design messaging client that brings state-of-the-art **Post-Quantum End-to-End Encryption (PQ-E2EE)** to mobile communications. Backed by **PocketBase**, the platform guarantees that messages, metadata, and attachments remain entirely confidential. 
+
+Every communication is independently encrypted per-recipient using **ML-KEM-512** for secure key encapsulation, authenticated via **Dilithium2 digital signatures**, and protected using **XChaCha20-Poly1305** symmetric authenticated encryption. The server acts as a blind broker, never possessing the means to view plaintext content or compromise private keys.
 
 ---
 
-## Technology Stack
+## 🚀 Key Features
 
-| Layer                  | Technology               |
-| ---------------------- | ------------------------ |
-| Frontend               | Flutter                  |
-| State Management       | Provider                 |
-| Backend                | PocketBase               |
-| Authentication         | PocketBase Auth          |
-| Storage                | PocketBase File Storage  |
-| Realtime               | PocketBase Subscriptions |
-| Secure Storage         | flutter_secure_storage   |
-| PQ Encryption          | ML-KEM-512 (Kyber)       |
-| Digital Signatures     | Dilithium2               |
-| Session Key Derivation | HKDF-SHA256              |
-| Symmetric Encryption   | XChaCha20-Poly1305       |
+* **Post-Quantum E2EE:** Secure against both classical attacks and future quantum computing threats using **ML-KEM-512** and **Dilithium2**.
+* **Zero-Trust Infrastructure:** Private keys are generated and stored exclusively on the user's device via hardware-backed secure storage.
+* **Realtime Messaging:** Instant message delivery, typing updates, and sync loops powered by PocketBase live subscriptions.
+* **Rich Interactions:** Full support for multi-recipient group chats, encrypted file attachments (up to 200 MB), replies, editing, soft deletions, and deep text search.
+* **Multi-Server Core:** Dynamically switch, add, or modify PocketBase backend instances from the login screen, including native support for `.onion` Tor routing addresses.
+* **Deep Visual Customization:** Over 50 distinct color themes selectable natively and persisted across sessions.
 
 ---
 
-## Cryptography Pipeline
+## 🛠️ Technology Stack
 
-### Identity
-
-Each user owns:
-
-* ML-KEM-512 keypair
-* Dilithium2 keypair
-
-Private keys remain on the device.
-
-Public keys are published to PocketBase for recipient discovery.
-
-### Encryption Flow
-
-```text
-Message
-   │
-   ▼
-Payload Encoding
-   │
-   ▼
-ML-KEM Encapsulation
-   │
-   ▼
-Shared Secret
-   │
-   ▼
-HKDF-SHA256
-   │
-   ▼
-Session Key
-   │
-   ▼
-XChaCha20-Poly1305
-   │
-   ▼
-Ciphertext
-   │
-   ▼
-Dilithium Signature
-```
-
-### Decryption Flow
-
-```text
-Encrypted Payload
-        │
-        ▼
-ML-KEM Decapsulation
-        │
-        ▼
-Shared Secret
-        │
-        ▼
-HKDF-SHA256
-        │
-        ▼
-Session Key
-        │
-        ▼
-XChaCha20-Poly1305
-        │
-        ▼
-Plaintext
-        │
-        ▼
-Dilithium Verification
-```
+| Layer | Technology Used | Description |
+| :--- | :--- | :--- |
+| **Frontend Framework** | Flutter (Dart SDK `^3.10.1`) | High-performance cross-platform UI engine |
+| **State Management** | Provider | Reactive application architecture and state propagation |
+| **Backend & Sync** | PocketBase | Lightweight backend for authentication, database records, and realtime events |
+| **Local Secure Storage** | `flutter_secure_storage` | Device-isolated containment for sessions and cryptographic keys |
+| **PQ Encryption** | ML-KEM-512 & Dilithium2 | Post-Quantum cryptographic primitives via `oqs` |
+| **Symmetric Cipher** | XChaCha20-Poly1305 | High-speed authenticated encryption with extended nonces |
 
 ---
 
-## Getting Started
+## 📖 Extended Documentation
+
+For deeper insight into specific layers of the architecture, consult the comprehensive documentation guides available in the `docs/` repository directory:
+
+* 📑 **[Getting Started](docs/getting-started.md)** – Environment prerequisites, installation guidelines, dependency maps, first-run routines, and connectivity troubleshooting.
+* 🏗️ **[Architecture](docs/architecture.md)** – System engineering diagrams, zero-trust cryptographic models, and granular cross-network payload data flows.
+* 📁 **[Project Structure](docs/project-structure.md)** – High-level directory maps, module encapsulation guidelines, and individual development responsibilities.
+* 🔑 **[E2EE Cryptography](docs/e2ee-cryptography.md)** – Detailed protocol walkthroughs detailing ML-KEM encapsulation, HKDF-SHA256 session key derivation, and Dilithium signature processing.
+* 🗄️ **[PocketBase Schema](docs/pocketbase-schema.md)** – Backend layout references, structural rules, and collection expectations for the `users`, `chats`, and `messages` databases.
+* 🖥️ **[Screens & Features](docs/screens-and-features.md)** – User interface layout specifications, internal navigation trees, component behaviors, and messaging feature catalogs.
+* 💾 **[State & Storage](docs/state-and-storage.md)** – Local persistence architecture, reactive multi-provider state orchestration, and isolated multi-server containment data structures.
+* 🎨 **[Themes](docs/themes.md)** – Deep layout reference covering all 50 available visual styling palettes and developer steps to configure brand new color layouts.
+* 🚀 **[Build & Deploy](docs/build-and-deploy.md)** – Android compilation protocols, production build variant flags, signing keys setup, and release deployment pipelines.
+* 📦 **[Dependencies](docs/dependencies.md)** – Granular tracking log of all included software packages, version constraints, and their distinct roles in the architecture.
+
+---
+## ⚡ Quick Start
 
 ### Prerequisites
 
-* Flutter SDK
-* Dart SDK `^3.10.1`
-* Running PocketBase instance
-* Network connectivity to your PocketBase deployment
+* **Flutter SDK** (Dart SDK constraint: `^3.10.1`)
+* A running **PocketBase Server** reachable from your target environment.
 
-### Installation
-=======
-- Flutter SDK (Dart SDK constraint in `pubspec.yaml` is `^3.10.1`)
-- A running PocketBase server reachable from the device/emulator
-  - The default server is a `.onion` address; if your deployment requires Tor, ensure the device has connectivity before logging in. See [Getting Started](docs/getting-started.md).
+  > ⚠️ **Note:** The backend default configuration targets a `.onion` address. If your server is hosted inside the Tor network, ensure your host device running the application is properly connected via a Tor proxy or client before authentication.
 
-## Quick start
->>>>>>> Stashed changes
+### Compilation
 
-```bash
-git clone https://github.com/Erebus9456/erebus-frontend.git
+1. **Clone the repository:**
 
-cd erebus-frontend
+   ```bash
+   git clone https://github.com/Erebus9456/erebus-frontend.git
+   cd erebus-frontend
+   ```
 
-flutter pub get
+2. **Fetch dependencies:**
 
-flutter run
-```
+   ```bash
+   flutter pub get
+   ```
 
-<<<<<<< Updated upstream
----
-=======
-On first launch:
+3. **Launch the application:**
 
-1. Pick a PocketBase server in the **Server Selector** on the login screen
-2. Register or login
-3. After login, the app ensures your **E2EE keypair material** exists locally and your **public keys** are uploaded
->>>>>>> Stashed changes
+   ```bash
+   flutter run
+   ```
 
-## Build Releases
+### First-Run Sequence
 
-<<<<<<< Updated upstream
+1. Upon initial launch, configure your server host routing using the Server Selector on the authentication view.
+2. Complete your Registration or Login profile.
+3. On successful authentication, the local device automatically configures your unique PQ-E2EE asymmetric keypairs and syncs the public keys to the remote host instance.
+
+## 📦 Build & Release
+
 ### Android APK
 
-=======
->>>>>>> Stashed changes
 ```bash
 flutter build apk --release
 ```
 
-Output:
+**Output Path:** `build/app/outputs/flutter-apk/app-release.apk`
 
-```text
-build/app/outputs/flutter-apk/app-release.apk
-```
-
-### Android App Bundle
+### Android App Bundle (AAB)
 
 ```bash
 flutter build appbundle --release
 ```
 
-<<<<<<< Updated upstream
-Output:
+**Output Path:** `build/app/outputs/bundle/release/app-release.aab`
 
-```text
-build/app/outputs/bundle/release/app-release.aab
-```
+## 📝 Developer Notes & Assumptions
 
----
+* **Target Scope:** This repository is dedicated exclusively to the Flutter client application. This iteration officially targets Android; alternative native system architecture layers are excluded.
+* **Database Synchronization:** The application explicitly expects an operational PocketBase layout mapping to structural `users`, `chats`, and `messages` collection endpoints as defined in the PocketBase Schema Docs.
 
-## Project Structure
-
-```text
-lib/
-├── classes/
-│   └── auth_provider.dart
-│
-├── screens/
-│   ├── auth/
-│   └── ui/
-│
-├── services/
-│   └── e2ee/
-│       ├── key_manager.dart
-│       ├── message_crypto.dart
-│       ├── signature_service.dart
-│       ├── public_key_repository.dart
-│       ├── payload_codec.dart
-│       ├── pb_file_downloader.dart
-│       └── secure_storage.dart
-│
-└── main.dart
-```
-
----
-
-## Application Flow
-
-### Startup
-
-```text
-Launch
-   │
-   ▼
-Splash Screen
-   │
-   ▼
-Restore Auth
-   │
-   ├── Authenticated → Home
-   │
-   └── Not Authenticated → Login
-```
-
-### Authentication
-
-1. User selects PocketBase server
-2. User registers or logs in
-3. E2EE keys are generated if missing
-4. Public keys are uploaded
-5. User enters secure messaging environment
-
----
-
-## Security Model
-
-### Private Keys
-
-Stored exclusively on the user's device using secure storage.
-
-### Public Keys
-
-Published to PocketBase for recipient key discovery.
-
-### Message Storage
-
-Messages are stored encrypted.
-
-The server never receives plaintext content or encryption keys.
-
-### Recipient Isolation
-
-Each recipient receives an independently encrypted copy of a message using their own public key.
-
----
-=======
-Output paths:
-
-- `build/app/outputs/flutter-apk/app-release.apk`
-- `build/app/outputs/bundle/release/app-release.aab`
-
-See [Build & Deploy](docs/build-and-deploy.md) for signing, versioning, and release checklist.
-
-## Project layout
-
-```
-lib/
-├── main.dart              # App entry point
-├── classes/               # AuthProvider, themes, server/auth storage
-├── screens/               # UI (auth, home, chat, profile, themes)
-└── services/e2ee/         # Post-quantum encryption module
-```
-
-See [Project Structure](docs/project-structure.md) for the full breakdown.
->>>>>>> Stashed changes
-
-## Assets
-
-```text
-assets/
-├── app_logo.svg
-└── splash_lottie_logo_aninmation.json
-```
-
-<<<<<<< Updated upstream
----
-
-## Notes & Assumptions
-
-* This repository contains the Flutter client only.
-* PocketBase schema and migrations are maintained separately.
-* The application expects collections such as:
-
-  * `users`
-  * `chats`
-  * `messages`
-* Message encryption is performed per recipient.
-* Public key discovery is handled through PocketBase user records.
-
-### Backend Repository
-
-**Backend Source:** https://github.com/Erebus9456/erebus-backend
-
----
-
-<p align="center">
-  Built with Flutter, PocketBase, and Post-Quantum Cryptography.
-</p>
-=======
-## Notes
-
-- This repository documents the **Flutter client only**. PocketBase collection schemas and server deployment are external; the client expects `users`, `chats`, and `messages` collections as described in [PocketBase Schema](docs/pocketbase-schema.md).
-- This project targets **Android**; other platform folders are excluded from the repo.
->>>>>>> Stashed changes
+🔗 **Backend Core Source:** [Erebus Backend Repository](https://github.com/Erebus9456/erebus-backend)
