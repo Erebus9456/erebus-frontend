@@ -35,6 +35,9 @@ jobs:
       - name: Build Android APK (Split per ABI)
         run: flutter build apk --release --split-per-abi
 
+      - name: Build Android APK Playstore Release
+        run: flutter build apk --release 
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
